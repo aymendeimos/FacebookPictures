@@ -45,6 +45,10 @@ class Navbar extends Component {
     }
 
     render() {
+        let signout = (<li className="nav-item"><a className="nav-link waves-effect waves-light" onClick={this.signout}>Sign Out</a></li>);
+        let login = (<li className="nav-item"><Link to="/user-login"><strong className="nav-link waves-effect waves-light" type="" id="SignUp">LogIn</strong></Link></li>);
+        let signup = (<li className="nav-item"><Link to="/user-registration"><strong className="nav-link waves-effect waves-light" type="" id="SignUp">SignUp </strong></Link></li>);
+        let control = this.props.username ? signout: [login , signup];
         return (
             <nav
                 className="navbar fixed-top navbar-toggleable-sm navbar-dark elegant-color-dark navbarr">
@@ -66,13 +70,11 @@ class Navbar extends Component {
 
                         <ul className="navbar-nav ">
                             <li className="nav-item">
-                                {this.props.username}
-                            </li>
-                            <li className="nav-item">
-                                <a className="nav-link waves-effect waves-light" onClick={this.signout}>
-                                    Sign Out
+                                <a className="nav-link waves-effect waves-light">
+                                    {this.props.username}
                                 </a>
                             </li>
+                            {control}
                         </ul>
                     </div>
                 </div>
