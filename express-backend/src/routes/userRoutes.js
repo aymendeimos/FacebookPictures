@@ -99,4 +99,90 @@ userRouter.route("/logout").post(function (req, res) {
 });
 
 
+//  Defined update the account with facebook informations
+userRouter.route("/update/:id").post(function (req, res) {
+    User.findOneAndUpdate({
+            _id: req.params.id
+        }, {
+            facebook_id: req.body.facebook_id,
+            facebook_name: req.body.facebook_name,
+            facebook_accesstoken: req.body.facebook_accesstoken
+        }, {
+            new: true
+        },
+        function (err, person) {
+            if (err) {
+                res.json({
+                    success: false,
+                    message: "Internal error please try again later"
+                });
+            } else {
+                let token = localStorage.getItem("token");
+                if (token) {
+                    jwt.verify(token, secret, function (err, decoded) {
+                        if (err) {
+                            res.json({
+                                success: false,
+                                message: "Token Invalid"
+                            });
+                        } else {
+                            req.decoded = decoded;
+                            localStorage.removeItem("token");
+                            let token = jwt.sign({
+                                id: req.decoded.id,
+                                email: req.decoded.email,
+                                facebook_id: person.facebook_id,
+                                facebook_name: person.facebook_name,
+                                facebook_accesstoken: person.facebook_accesstoken
+                            }, secret, {
+                                expiresIn: 86400
+                            });
+                            localStorage.setItem("token", token);
+                            res.json({
+                                success: true,
+                                message: "Succefuly Updated your facebook account",
+                                token: req.decoded
+                            });
+                        }
+                    });
+                } else {
+                    res.json({
+                        success: false,
+                        message: "NO token provided"
+                    });
+                }
+            }
+        });
+});
+
+//get the JWT token
+
+userRouter.route("/gettoken").post(function (req, res) {
+    let token = localStorage.getItem("token");
+
+    if (token) {
+        jwt.verify(token, secret, function (err, decoded) {
+            if (err) {
+                res.json({
+                    success: false,
+                    message: "Token Invalid"
+                });
+            } else {
+                req.decoded = decoded;
+                res.json({
+                    success: true,
+                    message: "token exist",
+                    token: req.decoded
+                });
+            }
+        });
+    } else {
+        res.json({
+            success: false,
+            message: "NO token provided"
+        });
+    }
+});
+
+
 module.exports = userRouter;
