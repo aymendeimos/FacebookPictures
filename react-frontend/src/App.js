@@ -5,6 +5,7 @@ import UserRegister from "./components/userRegister";
 import UserLogin from "./components/userLogin";
 import Notfound from "./components/Notfound";
 import Firstpage from "./components/Firstpage";
+import UserProfile from "./components/userProfile";
 
 class App extends Component {
   render() {
@@ -13,6 +14,7 @@ class App extends Component {
         <Switch>
           <Route  exact path="/user-registration" component={UserRegister}/>
           <Route  exact path="/user-login" component={UserLogin}/>
+          <Route  exact path="/user-profile" component={UserProfile}/>
           <Route  exact path="/" component={Firstpage}/>
           <Route component={Notfound}/>
         </Switch>
