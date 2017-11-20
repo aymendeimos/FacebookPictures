@@ -1,2 +1,4 @@
-./react-frontend/node_modules
-./express-backend/node_modules
+./react-frontend/node_modules/*
+./express-backend/node_modules/*
+./react-frontend/*.log
+./express-backend/*.log
