@@ -13,11 +13,13 @@ class UserProfile extends React.Component {
             facebook_id: "",
             facebook_name: "",
             facebook_accesstoken: "",
-            photos : []
+            photos : [],
+            selected_photos: []
         };
 
         this.updateAccount = this.updateAccount.bind(this);
         this.fetchPhotosFacebook = this.fetchPhotosFacebook.bind(this);
+        this.select = this.select.bind(this);
 
         //load account if the user is connected if not go to log in
         this.loadAccount();
@@ -169,11 +171,45 @@ class UserProfile extends React.Component {
         }, 1000);
     }
 
+    mapPhotos(photos){
+        if (photos instanceof Array) {
+            var gallery = photos.map((object, i) => {
+                    return (
+                        <div className="col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 photo animated zoomIn" key={i}>
+                            <img className="img-thumbnail" id={object.id} src={object.source} alt={object.name} onClick={this.select} />
+                        </div>
+                    );
+                })
+        }
+        return gallery;
+    }
+
+    select(event) {
+        let selected = this.state.selected_photos;
+        if (selected.includes(event.target.src)) {
+            document.getElementById(event.target.id).className = document.getElementById(event.target.id).className.replace(/(?:^|\s)selected(?!\S)/g, " ");
+            selected.splice(selected.indexOf(event.target.src), 1);
+        } else {
+            document.getElementById(event.target.id).className += " selected";
+            selected.push(event.target.src);
+        }
+        this.setState({
+            selected_photos : selected
+        })
+    }
+
     render() {
         if (this.state.facebook_id) {
             return (
                 <div>
                     <Navbar username={this.state.facebook_name} />
+                    <div id="gallery" className="row center">
+                        <div className="col-md-12">
+                            <a>Select photos and click the button</a>
+                            <button id="upload" className="btn btn-indigo">Save {this.state.selected_photos.length}</button>
+                        </div>
+                        {this.mapPhotos(this.state.photos)}
+                    </div>
                     <div className="refresh waves-effect waves-light" onClick={this.fetchPhotosFacebook}>
                         <img id="refresh" src="./assets/img/refresh.png" className="img-fluid" alt="refresh"/>
                     </div>
