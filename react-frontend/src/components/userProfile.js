@@ -18,21 +18,20 @@ class UserProfile extends React.Component {
 
         this.updateAccount = this.updateAccount.bind(this);
         this.fetchPhotosFacebook = this.fetchPhotosFacebook.bind(this);
-        this.loadAccount();
-    }
 
-    componentWillMount() {
+        //load account if the user is connected if not go to log in
+        this.loadAccount();
+        //load facebook script
         this.loadScript();
+
     }
 
     loadScript() {
         window.fbAsyncInit = function () {
-            window
-                .FB
-                .init({
+            window.FB.init({
                     appId: "864188347076044", cookie: true, // enable cookies to allow the server to access the session
                     xfbml: true, // parse social plugins on this page
-                    version: "v2.8" // use version 2.1
+                    version: "v2.8" // use version 2.8
                 });
         };
         // Load the required SDK asynchronously for facebook
@@ -141,7 +140,7 @@ class UserProfile extends React.Component {
                 } else {
                     document.getElementById("facebooklink").style.display = "none";
                     this.notifState("warning", "redirecting to login page");
-                    window.location = "/user-login";
+                    setTimeout(() => {window.location = "/user-login"}, 2000);
                 }
             })
             .catch(err => {
