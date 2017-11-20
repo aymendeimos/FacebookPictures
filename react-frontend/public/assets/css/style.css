@@ -102,3 +102,19 @@ body {
 .container{
     overflow-x: hidden;
 }
+
+#gallery{
+    margin : 60px auto  auto auto;
+    width: 100%;
+    min-width: 300px;
+    color : #ffffff;
+}
+
+.photo {
+    padding: 10px;
+}
+
+.selected{
+    background-color: #0275d8 !important;
+    border: 1px solid #0275d8 !important;
+}
