@@ -182,7 +182,6 @@ class userLogin extends Component {
                         </div>
                     </div>
                 </div>
-                <div id="notif" className=""></div>
             </div>
         );
     }

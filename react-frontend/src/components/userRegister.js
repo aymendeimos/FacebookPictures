@@ -220,7 +220,6 @@ class userRegister extends Component {
                         </div>
                     </div>
                 </div>
-                <div id="notif" className=""></div>
             </div>
         
         );
