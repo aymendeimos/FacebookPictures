@@ -10,9 +10,11 @@ class userRegister extends Component {
         this.state = {
             email: "",
             password: "",
-            confirmPassword: ""
+            confirmPassword: "",
+            logged : true
         };
 
+        this.checkLogin();
         this.handleChangeEmail = this.handleChangeEmail.bind(this);
         this.handleChangePass = this.handleChangePass.bind(this);
         this.handleChangeConfirmPass = this.handleChangeConfirmPass.bind(this);
@@ -21,6 +23,27 @@ class userRegister extends Component {
         this.checkPassword = this.checkPassword.bind(this);
         this.checkConfirmPassword = this.checkConfirmPassword.bind(this);
         this.disableSubmitButton = this.disableSubmitButton.bind(this);
+    }
+
+    checkLogin(){
+        let self = this;
+        axios.post("http://localhost:4200/users/gettoken")
+        .then(res => {
+            if(res.data.success){
+                self.setState({
+                    logged : true
+                });
+                self.notifState("warning","You are already logged in");
+                setTimeout(() => (window.location = "/user-profile"),2000);
+            }else{
+                self.setState({
+                    logged : false
+                });
+            }
+        })
+        .catch(err => {
+            console.log(err);
+        });
     }
 
     checkEmail(style) {
@@ -173,56 +196,63 @@ class userRegister extends Component {
 
 
     render() {
-        return (
-            <div className="container">
-                <div className="container cardcontainer userregistration  animated bounceInLeft" id="form">
-                    <div className="row justify-content-center">
-                        <div className="card col-lg-5 col-sm-8 col-md-8">
-                            <form className="card-block" onSubmit={this.handleSubmit}>
-                                <div className="form-header elegant-color-dark">
-                                    <h3> Register</h3>
-                                </div>
+        if(!this.state.logged){
+            return (
+                <div className="container">
+                    <div className="container cardcontainer userregistration  animated bounceInLeft" id="form">
+                        <div className="row justify-content-center">
+                            <div className="card col-lg-5 col-sm-8 col-md-8">
+                                <form className="card-block" onSubmit={this.handleSubmit}>
+                                    <div className="form-header elegant-color-dark">
+                                        <h3> Register</h3>
+                                    </div>
 
-                                <div className="md-form" id="mail">
-                                    <i className="fa fa-envelope prefix"/>
-                                    <input type="text" id="form3" className="form-control"
-                                        onChange={this.handleChangeEmail}/>
-                                    <label id="form2">Your email</label>
-                                    <p></p>
-                                </div>
-                                <div className="md-form" id="password">
-                                    <i className="fa fa-lock prefix"/>
-                                    <input name="firstpass" type="password" id="form4" className="form-control"
-                                        onChange={this.handleChangePass}/>
-                                    <label id="form4">Your password</label>
-                                    <p></p>
-                                </div>
-                                <div className="md-form" id="confirmpassword">
-                                    <i className="fa fa-lock prefix"/>
-                                    <input name="confirmpass" type="password" id="form5" className="form-control"
-                                        onChange={this.handleChangeConfirmPass}/>
-                                    <label id="form4">Confirm password</label>
-                                    <p></p>
-                                </div>
+                                    <div className="md-form" id="mail">
+                                        <i className="fa fa-envelope prefix"/>
+                                        <input type="text" id="form3" className="form-control"
+                                            onChange={this.handleChangeEmail}/>
+                                        <label id="form2">Your email</label>
+                                        <p></p>
+                                    </div>
+                                    <div className="md-form" id="password">
+                                        <i className="fa fa-lock prefix"/>
+                                        <input name="firstpass" type="password" id="form4" className="form-control"
+                                            onChange={this.handleChangePass}/>
+                                        <label id="form4">Your password</label>
+                                        <p></p>
+                                    </div>
+                                    <div className="md-form" id="confirmpassword">
+                                        <i className="fa fa-lock prefix"/>
+                                        <input name="confirmpass" type="password" id="form5" className="form-control"
+                                            onChange={this.handleChangeConfirmPass}/>
+                                        <label id="form4">Confirm password</label>
+                                        <p></p>
+                                    </div>
 
-                                <div className="text-center">
-                                    <button className="btn waves-effect waves-light elegant-color-dark" type="submit"
-                                            id="signup" disabled>Sign up
-                                    </button>
-                                    <Link to="/user-login">
-                                        <button className="btn waves-effect waves-light elegant-color-dark" type=""
-                                                id="SignUp">Go to Log In
+                                    <div className="text-center">
+                                        <button className="btn waves-effect waves-light elegant-color-dark" type="submit"
+                                                id="signup" disabled>Sign up
                                         </button>
-                                    </Link>
-                                </div>
+                                        <Link to="/user-login">
+                                            <button className="btn waves-effect waves-light elegant-color-dark" type=""
+                                                    id="SignUp">Go to Log In
+                                            </button>
+                                        </Link>
+                                    </div>
 
-                            </form>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        
-        );
+            );
+        }else{
+            return( 
+                <div>
+
+                </div> 
+            );
+        }
     }
 }
 
