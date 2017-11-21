@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "dependencies": {
     "axios": "^0.17.1",
+    "firebase": "^4.6.2",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-router-dom": "^4.1.1",
