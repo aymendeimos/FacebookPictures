@@ -98,7 +98,7 @@ class UserProfile extends React.Component {
                           function (response) {
                             if (response && !response.error) {
                                 //response.data
-                                console.log(response.data);
+                                //console.log(response.data);
                                 self.setState({
                                     photos : response.data
                                 });
@@ -141,8 +141,7 @@ class UserProfile extends React.Component {
                     });
                 } else {
                     document.getElementById("facebooklink").style.display = "none";
-                    this.notifState("warning", "redirecting to login page");
-                    setTimeout(() => {window.location = "/user-login"}, 2000);
+                    this.notifState("warning", "you are not logged in pleaze login first");
                 }
             })
             .catch(err => {
@@ -202,7 +201,7 @@ class UserProfile extends React.Component {
         if (this.state.facebook_id) {
             return (
                 <div>
-                    <Navbar username={this.state.facebook_name} />
+                    <Navbar/>
                     <div id="gallery" className="row center">
                         <div className="col-md-12">
                             <a>Select photos and click the button</a>
@@ -218,7 +217,7 @@ class UserProfile extends React.Component {
         } else {
             return (
                 <div>
-                    <Navbar username={this.state.email} />
+                    <Navbar/>
                     <img
                         className="img-fluid mx-auto"
                         id="facebooklink"
