@@ -4,9 +4,36 @@ import axios from "axios";
 import {Link} from "react-router-dom";
 
 class Navbar extends Component {
-    constructor(props) {
+    constructor(props){
         super(props);
+        this.state = {
+            email: '',
+            facebook_name: '',
+            logged : true
+        }
         this.signout = this.signout.bind(this);
+        this.loadAccount();
+    }
+
+    loadAccount() {
+        let self = this;
+        axios.post("http://localhost:4200/users/gettoken")
+            .then(res => {
+                if (res.data.success) {
+                    self.setState({
+                        email: res.data.token.email,
+                        facebook_name: res.data.token.facebook_name,
+                        logged : true,
+                    });
+                } else {
+                    self.setState({
+                        logged : false,
+                    });
+                }
+            })
+            .catch(err => {
+                console.log(err);
+            });
     }
 
     signout() {
@@ -45,10 +72,12 @@ class Navbar extends Component {
     }
 
     render() {
-        let signout = (<li className="nav-item"><a className="nav-link waves-effect waves-light" onClick={this.signout}>Sign Out</a></li>);
+        let username = (this.state.facebook_name ? this.state.facebook_name : this.state.email);
+        let signout = (<li className="nav-item" key="0"><a className="nav-link waves-effect waves-light" onClick={this.signout}>Sign Out</a></li>);
+        let profile = (<li className="nav-item" key="1"><Link to="/user-profile"><strong className="nav-link waves-effect waves-light" type="" id="">{username}</strong></Link></li>);
         let login = (<li className="nav-item" key="0"><Link to="/user-login"><strong className="nav-link waves-effect waves-light" type="" id="SignUp">LogIn</strong></Link></li>);
         let signup = (<li className="nav-item" key="1"><Link to="/user-registration"><strong className="nav-link waves-effect waves-light" type="" id="SignUp">SignUp </strong></Link></li>);
-        let control = this.props.username ? signout: [login , signup];
+        let control = this.state.logged ? [profile ,signout]: [login , signup];
         return (
             <nav
                 className="navbar fixed-top navbar-toggleable-sm navbar-dark elegant-color-dark navbarr">
@@ -69,11 +98,6 @@ class Navbar extends Component {
                         <ul className="navbar-nav mr-auto"></ul>
 
                         <ul className="navbar-nav ">
-                            <li className="nav-item">
-                                <a className="nav-link waves-effect waves-light">
-                                    {this.props.username}
-                                </a>
-                            </li>
                             {control}
                         </ul>
                     </div>
