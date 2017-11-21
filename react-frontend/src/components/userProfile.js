@@ -266,7 +266,7 @@ class UserProfile extends React.Component {
                         <div className="col-md-12">
                             <a>Select photos and click the button</a>
                             <button id="upload" className="btn btn-indigo" onClick={this.savePhotos}>Save {this.state.selected_photos.length}</button>
-                            <button id="upload" className="btn btn-indigo" onClick={this.getSavedPhotos}>Show Saved photos</button>
+                            <button id="showSaved" className="btn btn-indigo" onClick={this.getSavedPhotos}>Show Saved photos</button>
                         </div>
                         {this.mapSavedPhotos(this.state.saved_photos)}
                         {this.mapPhotos(this.state.photos)}
