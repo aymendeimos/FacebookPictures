@@ -4,6 +4,19 @@ import axios from "axios";
 
 import Navbar from "./navbar";
 
+import firebase from "firebase";
+
+var config = {
+    apiKey: "AIzaSyC0s9Sox9XTVuWZvngWP6EFp0shuBeGSZI",
+    authDomain: "codingchallenge-3e229.firebaseapp.com",
+    databaseURL: "https://codingchallenge-3e229.firebaseio.com",
+    projectId: "codingchallenge-3e229",
+    storageBucket: "codingchallenge-3e229.appspot.com",
+    messagingSenderId: "798211561197"
+};
+
+firebase.initializeApp(config);
+
 class UserProfile extends React.Component {
     constructor(props) {
         super(props);
@@ -14,10 +27,13 @@ class UserProfile extends React.Component {
             facebook_name: "",
             facebook_accesstoken: "",
             photos : [],
-            selected_photos: []
+            selected_photos: [],
+            saved_photos:[]
         };
 
         this.updateAccount = this.updateAccount.bind(this);
+        this.savePhotos = this.savePhotos.bind(this);
+        this.getSavedPhotos = this.getSavedPhotos.bind(this);
         this.fetchPhotosFacebook = this.fetchPhotosFacebook.bind(this);
         this.select = this.select.bind(this);
 
@@ -26,6 +42,24 @@ class UserProfile extends React.Component {
         //load facebook script
         this.loadScript();
 
+    }
+    
+
+    getSavedPhotos(){
+        let database = firebase.database().ref(this.state.id);
+        let savedPhotos = [];
+        let self = this;
+        database.on("value", res => {
+            let result = res.val();
+            result.forEach(item => {
+                savedPhotos.push(item);
+            });
+            self.setState({
+                saved_photos : savedPhotos
+            });
+        }, err => {
+            console.log("Error:  " + err.code);
+        });
     }
 
     loadScript() {
@@ -171,14 +205,29 @@ class UserProfile extends React.Component {
     }
 
     mapPhotos(photos){
+        let gallery;
         if (photos instanceof Array) {
-            var gallery = photos.map((object, i) => {
-                    return (
-                        <div className="col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 photo animated zoomIn" key={i}>
-                            <img className="img-thumbnail" id={object.id} src={object.source} alt={object.name} onClick={this.select} />
-                        </div>
-                    );
-                })
+            gallery = photos.map((object, i) => {
+                return (
+                    <div className="col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 photo animated zoomIn" key={i}>
+                        <img className="img-thumbnail" id={object.id} src={object.source} alt={object.name} onClick={this.select} />
+                    </div>
+                );
+            })
+        }
+        return gallery;
+    }
+
+    mapSavedPhotos(photos){
+        let gallery;
+        if (photos instanceof Array) {
+            gallery = photos.map((object, i) => {
+                return (
+                    <div className="col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 photo animated zoomIn" key={i}>
+                        <img className="img-thumbnail savedPhoto" src={object} alt=""/>
+                    </div>
+                );
+            })
         }
         return gallery;
     }
@@ -197,6 +246,17 @@ class UserProfile extends React.Component {
         })
     }
 
+    savePhotos() {
+        let photosToSave = this.state.selected_photos;
+        let photosSaved = this.state.saved_photos;
+        let photos = [  ...new Set(photosToSave.concat(photosSaved)) ];
+        let database = firebase.database().ref(this.state.id);
+        database.set(photos);
+        this.notifState("success", "uploaded");
+        this.getSavedPhotos();
+    }
+
+
     render() {
         if (this.state.facebook_id) {
             return (
@@ -205,8 +265,10 @@ class UserProfile extends React.Component {
                     <div id="gallery" className="row center">
                         <div className="col-md-12">
                             <a>Select photos and click the button</a>
-                            <button id="upload" className="btn btn-indigo">Save {this.state.selected_photos.length}</button>
+                            <button id="upload" className="btn btn-indigo" onClick={this.savePhotos}>Save {this.state.selected_photos.length}</button>
+                            <button id="upload" className="btn btn-indigo" onClick={this.getSavedPhotos}>Show Saved photos</button>
                         </div>
+                        {this.mapSavedPhotos(this.state.saved_photos)}
                         {this.mapPhotos(this.state.photos)}
                     </div>
                     <div className="refresh waves-effect waves-light" onClick={this.fetchPhotosFacebook}>
