@@ -122,3 +122,8 @@ body {
     background-color: #FFCB2B !important;
     border: 1px solid #FFCB2B !important;
 }
+
+.selectedToRemove{
+    background-color: #CC0000 !important;
+    border: 1px solid #CC0000 !important;
+}
