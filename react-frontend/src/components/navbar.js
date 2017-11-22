@@ -1,8 +1,7 @@
 import React, {Component} from "react";
-
-import axios from "axios";
 import {Link} from "react-router-dom";
-import {loadAccount} from "./helper";
+
+import {loadAccount,signout} from "./helper";
 
 class Navbar extends Component {
     constructor(props){
@@ -12,52 +11,17 @@ class Navbar extends Component {
             facebook_name: '',
             logged : true
         }
-        this.signout = this.signout.bind(this);
+        
         loadAccount(this);
-    }
-
-    signout() {
-        axios.post("http://localhost:4200/users/logout")
-            .then(res => {
-                if (res.data.success) {
-                    this.notifState("info", "Logging out");
-                    window.location = "/";
-                } else {
-                    this.notifState("danger","Internal error plz try again later");
-                }
-            })
-            .catch(err => {
-                this.notifState("danger","Internal error plz try again later");
-            })
-    }
-
-    notifState(type, message) {
-        var notif = document.getElementById("notif");
-        notif.innerHTML = message;
-        notif.className = "btn btn-" + type;
-        notif.style.display = "block";
-        notif.style.opacity = 1;
-        setTimeout(() => {
-            var fadeEffect = setInterval(function () {
-                if (!notif.style.opacity) {
-                    notif.style.opacity = 1;
-                }
-                if (notif.style.opacity < 0.1) {
-                    clearInterval(fadeEffect);
-                } else {
-                    notif.style.opacity -= 0.1;
-                }
-            }, 200);
-        }, 1000);
     }
 
     render() {
         let username = (this.state.facebook_name ? this.state.facebook_name : this.state.email);
-        let signout = (<li className="nav-item" key="0"><a className="nav-link waves-effect waves-light" onClick={this.signout}>Sign Out</a></li>);
+        let logout = (<li className="nav-item" key="0"><a className="nav-link waves-effect waves-light" onClick={signout}>Sign Out</a></li>);
         let profile = (<li className="nav-item" key="1"><Link to="/user-profile"><strong className="nav-link waves-effect waves-light" type="" id="">{username}</strong></Link></li>);
         let login = (<li className="nav-item" key="0"><Link to="/user-login"><strong className="nav-link waves-effect waves-light" type="" id="SignUp">LogIn</strong></Link></li>);
         let signup = (<li className="nav-item" key="1"><Link to="/user-registration"><strong className="nav-link waves-effect waves-light" type="" id="SignUp">SignUp </strong></Link></li>);
-        let control = this.state.logged ? [profile ,signout]: [login , signup];
+        let control = this.state.logged ? [profile ,logout]: [login , signup];
         return (
             <nav
                 className="navbar fixed-top navbar-toggleable-sm navbar-dark elegant-color-dark navbarr">
