@@ -2,7 +2,7 @@
 import React, {Component} from "react";
 import axios from "axios";
 import {Link} from "react-router-dom";
-import {checkLogin,notifState,checkEmail,checkPassword} from "./helper"
+import {checkLogin,notifState,checkEmail,checkPassword,submit} from "./helper"
 
 class userRegister extends Component {
 
@@ -79,21 +79,7 @@ class userRegister extends Component {
     handleSubmit(event) {
         if (checkEmail(this) && checkPassword(this) && this.checkConfirmPassword()) {
             event.preventDefault();
-            axios.post("http://localhost:4200/users/signup", {
-                email: this.state.email,
-                password : this.state.password,
-            })
-            .then(res => {
-            if(res.data.success){
-                notifState("success",res.data.message) ;
-                window.location = "/user-login" ;
-            }else{
-                notifState("warning",res.data.message) ;
-            }
-            })
-            .catch(err => {
-            notifState("danger","Internal error plz try again later");
-            });
+            submit("signup",this.state.email,this.state.password);
         }
     }
 
