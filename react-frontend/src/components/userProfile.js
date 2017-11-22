@@ -29,7 +29,8 @@ class UserProfile extends React.Component {
             photos : [],
             selected_photos: [],
             saved_photos:[],
-            photos_to_remove :[]
+            photos_to_remove :[],
+            control_out : true
         };
 
         this.savePhotos = this.savePhotos.bind(this);
@@ -38,6 +39,7 @@ class UserProfile extends React.Component {
         this.fetchPhotosFacebook = this.fetchPhotosFacebook.bind(this);
         this.select = this.select.bind(this);
         this.selectToDelet = this.selectToDelet.bind(this);
+        this.showControl = this.showControl.bind(this);
         //load account if the user is connected if not go to log in
         loadAccount(this);
         //load facebook script
@@ -201,23 +203,75 @@ class UserProfile extends React.Component {
         })
     }
 
+    showControl(){
+        let self = this ;
+        let showControlButton = document.getElementById("showControlButton").children;
+        let refreshButton = document.getElementById("refreshButton");
+        let saveButton = document.getElementById("saveButton");
+        let showSavedButton = document.getElementById("showSavedButton");
+        let deletButton = document.getElementById("deleteButton");
+        if(!self.state.control_out){
+            refreshButton.style.display = "block";
+            saveButton.style.display = "block";
+            showSavedButton.style.display = "block";
+            deletButton.style.display = "block";
+            showControlButton[0].style.transform  = "rotate(45deg)";
+            self.setState({
+                control_out : true
+            });
+        }else{
+            showControlButton[0].style.transform  = "rotate(0deg)";
+            refreshButton.style.display = "none";
+            saveButton.style.display = "none";
+            showSavedButton.style.display = "none";
+            deletButton.style.display = "none";
+            self.setState({
+                control_out : false
+            });
+        }
+    }
+
     render() {
         if (this.state.facebook_id) {
             return (
                 <div>
                     <Navbar/>
                     <div id="gallery" className="row center">
-                        <div className="col-md-12">
-                            <strong>Select photos and click the button</strong>
-                            <button id="upload" className="btn waves-effect waves-light success-color" onClick={this.savePhotos}>Save {this.state.selected_photos.length}</button>
-                            <button id="showSaved" className="btn waves-effect waves-light warning-color" onClick={this.getSavedPhotos}>Show Saved photos</button>
-                            <button id="delet" className="btn waves-effect waves-light danger-color" onClick={this.deletPhotos}>Delet {this.state.photos_to_remove.length}</button>
-                        </div>
                         {this.mapSavedPhotos(this.state.saved_photos)}
                         {this.mapPhotos(this.state.photos)}
                     </div>
-                    <div className="refresh waves-effect waves-light" onClick={this.fetchPhotosFacebook}>
-                        <img id="refresh" src="./assets/img/refresh.png" className="img-fluid" alt="refresh"/>
+                    <div id="showControlButton"
+                         className="ballon show waves-effect waves-light" 
+                         onClick={this.showControl}>
+                        <img id="showControlImg" src="./assets/img/plus.png" className="img-fluid" alt="refresh"/>
+                    </div>
+                    <div id="refreshButton" 
+                         data-balloon="Refresh photos from facebook" 
+                         data-balloon-pos="left" 
+                         className="ballon refresh animated fadeInUp waves-effect waves-light" 
+                         onClick={this.fetchPhotosFacebook}>
+                        <img id="refreshImg" src="./assets/img/refresh.png" className="img-fluid" alt="refresh"/>
+                    </div>
+                    <div id="saveButton" 
+                         data-balloon={"Save " + this.state.selected_photos.length + " selected photos"}
+                         data-balloon-pos="left" 
+                         className="ballon save animated fadeInUp waves-effect waves-light" 
+                         onClick={this.savePhotos}>
+                        <img id="saveImg" src="./assets/img/save.png" className="img-fluid" alt="refresh"/>
+                    </div>
+                    <div id="showSavedButton" 
+                         data-balloon="Show saved photos" 
+                         data-balloon-pos="left" 
+                         className="ballon showSaved animated fadeInUp waves-effect waves-light" 
+                         onClick={this.getSavedPhotos}>
+                        <img id="showSavedImg" src="./assets/img/show.png" className="img-fluid" alt="refresh"/>
+                    </div>
+                    <div id="deleteButton" 
+                         data-balloon={"Delet " + this.state.photos_to_remove.length + " Selected photos"} 
+                         data-balloon-pos="left" 
+                         className="ballon delete animated fadeInUp waves-effect waves-light" 
+                         onClick={this.deletPhotos}>
+                        <img id="deleteImg" src="./assets/img/delet.png" className="img-fluid" alt="refresh"/>
                     </div>
                 </div>
             );
