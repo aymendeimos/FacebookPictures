@@ -6,6 +6,8 @@ import Navbar from "./navbar";
 
 import firebase from "firebase";
 
+import {notifState,loadScript,loadAccount,facebookLogin} from "./helper"
+
 var config = {
     apiKey: "AIzaSyC0s9Sox9XTVuWZvngWP6EFp0shuBeGSZI",
     authDomain: "codingchallenge-3e229.firebaseapp.com",
@@ -38,9 +40,9 @@ class UserProfile extends React.Component {
         this.select = this.select.bind(this);
 
         //load account if the user is connected if not go to log in
-        this.loadAccount();
+        loadAccount(this);
         //load facebook script
-        this.loadScript();
+        loadScript();
 
     }
     
@@ -62,68 +64,10 @@ class UserProfile extends React.Component {
         });
     }
 
-    loadScript() {
-        window.fbAsyncInit = function () {
-            window.FB.init({
-                    appId: "864188347076044", cookie: true, // enable cookies to allow the server to access the session
-                    xfbml: true, // parse social plugins on this page
-                    version: "v2.8" // use version 2.8
-                });
-        };
-        // Load the required SDK asynchronously for facebook
-        (function (d, s, id) {
-            var js,
-                fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) 
-                return;
-            js = d.createElement(s);
-            js.id = id;
-            js.src = "https://connect.facebook.net/en_US/sdk.js";
-            fjs
-                .parentNode
-                .insertBefore(js, fjs);
-        }(document, "script", "facebook-jssdk"));
-    }
-
-    facebookLogin() {
-        window.FB.login(function (resp) {
-                this.statusChangeCallback(resp);
-        }.bind(this), {scope: "email,public_profile,user_photos"});
-    }
-
-    checkLoginState() {
-        window.FB.getLoginStatus(function (response) {
-            alert("FB Callback");
-            this.statusChangeCallback(response);
-        });
-    }
-
-    statusChangeCallback(res) {
-        this.setState({facebook_accesstoken: res.authResponse.accessToken});
-        if (res.status === "connected") {
-            // Logged into your app and Facebook.
-            this.fetchDataFacebook();
-            //this.fetchPhotosFacebook();
-        } else if (res.status === "not_authorized") {
-            console.log("Import error", "Authorize app to import data", "error")
-        } else {
-            console.log("Import error", "Error occured while importing data", "error")
-        }
-    }
-
-    fetchDataFacebook() {
-        let self = this;
-        window.FB.api("/me", function (user) {
-            self.setState({facebook_id: user.id, facebook_name: user.name});
-            self.updateAccount(user.id, user.name, self.state.facebook_accesstoken);
-        });
-        
-    }
-
     fetchPhotosFacebook() {
         let self = this;
         if (self.state.facebook_id) {
-            self.notifState("success", "Fetching your photos....");
+            notifState("success", "Fetching your photos....");
             window.FB.api("/" + 
                           self.state.facebook_id + 
                           "/photos?type=uploaded&limit=1000&fields=source,picture,cover,link,name,created_t" +
@@ -136,14 +80,14 @@ class UserProfile extends React.Component {
                                 self.setState({
                                     photos : response.data
                                 });
-                                self.notifState("success", "Done");
+                                notifState("success", "Done");
                             } else {
                                 self.setState({facebook_id: "", facebook_name: "", facebook_accesstoken: ""});
-                                self.notifState("danger", "We cant Fetch your photos session expired");
+                                notifState("danger", "We cant Fetch your photos session expired");
                             }
                         });
         } else {
-            self.notifState("danger", "Link your facebook account first");
+            notifState("danger", "Link your facebook account first");
         }
     }
 
@@ -151,57 +95,14 @@ class UserProfile extends React.Component {
         axios.post("http://localhost:4200/users/update/" + this.state.id, {facebook_id, facebook_name, facebook_accesstoken})
             .then(res => {
                 if (res.data.success) {
-                    this.notifState("success", res.data.message);
+                    notifState("success", res.data.message);
                 } else {
-                    this.notifState("danger", res.data.message);
+                    notifState("danger", res.data.message);
                 }
             })
             .catch(err => {
-                this.notifState("danger", "Internal Error plz try again later");
+                notifState("danger", "Internal Error plz try again later");
             });
-    }
-
-    loadAccount() {
-        let self = this;
-        axios.post("http://localhost:4200/users/gettoken")
-            .then(res => {
-                if (res.data.success) {
-                    self.setState({
-                        id: res.data.token.id,
-                        email: res.data.token.email,
-                        facebook_id: res.data.token.facebook_id,
-                        facebook_name: res.data.token.facebook_name,
-                        facebook_accesstoken: res.data.token.facebook_accesstoken
-                    });
-                } else {
-                    document.getElementById("facebooklink").style.display = "none";
-                    this.notifState("warning", "you are not logged in pleaze login first");
-                }
-            })
-            .catch(err => {
-                this.notifState("danger","Internal error plz try again later");
-            });
-    }
-
-    //change notification text and color
-    notifState(type, message) {
-        let notif = document.getElementById("notif");
-        notif.innerHTML = message;
-        notif.className = "btn btn-" + type;
-        notif.style.display = "block";
-        notif.style.opacity = 1;
-        setTimeout(() => {
-            let fadeEffect = setInterval(function () {
-                if (!notif.style.opacity) {
-                    notif.style.opacity = 1;
-                }
-                if (notif.style.opacity < 0.1) {
-                    clearInterval(fadeEffect);
-                } else {
-                    notif.style.opacity -= 0.1;
-                }
-            }, 200);
-        }, 1000);
     }
 
     mapPhotos(photos){
@@ -252,7 +153,7 @@ class UserProfile extends React.Component {
         let photos = [  ...new Set(photosToSave.concat(photosSaved)) ];
         let database = firebase.database().ref(this.state.id);
         database.set(photos);
-        this.notifState("success", "uploaded");
+        notifState("success", "uploaded");
         this.getSavedPhotos();
     }
 
@@ -286,7 +187,7 @@ class UserProfile extends React.Component {
                         src="./assets/img/loginFacebook.png"
                         title="facebook login"
                         alt="facebook"
-                        onClick={() => this.facebookLogin()} />
+                        onClick={() => facebookLogin(this)} />
                 </div>
             );
         }

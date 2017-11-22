@@ -2,6 +2,7 @@ import React, {Component} from "react";
 
 import axios from "axios";
 import {Link} from "react-router-dom";
+import {loadAccount} from "./helper";
 
 class Navbar extends Component {
     constructor(props){
@@ -12,28 +13,7 @@ class Navbar extends Component {
             logged : true
         }
         this.signout = this.signout.bind(this);
-        this.loadAccount();
-    }
-
-    loadAccount() {
-        let self = this;
-        axios.post("http://localhost:4200/users/gettoken")
-            .then(res => {
-                if (res.data.success) {
-                    self.setState({
-                        email: res.data.token.email,
-                        facebook_name: res.data.token.facebook_name,
-                        logged : true,
-                    });
-                } else {
-                    self.setState({
-                        logged : false,
-                    });
-                }
-            })
-            .catch(err => {
-                console.log(err);
-            });
+        loadAccount(this);
     }
 
     signout() {
