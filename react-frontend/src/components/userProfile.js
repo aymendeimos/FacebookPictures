@@ -1,7 +1,5 @@
 import React from "react";
 
-import axios from "axios";
-
 import Navbar from "./navbar";
 
 import firebase from "firebase";
@@ -30,15 +28,16 @@ class UserProfile extends React.Component {
             facebook_accesstoken: "",
             photos : [],
             selected_photos: [],
-            saved_photos:[]
+            saved_photos:[],
+            photos_to_remove :[]
         };
 
-        this.updateAccount = this.updateAccount.bind(this);
         this.savePhotos = this.savePhotos.bind(this);
+        this.deletPhotos = this.deletPhotos.bind(this);
         this.getSavedPhotos = this.getSavedPhotos.bind(this);
         this.fetchPhotosFacebook = this.fetchPhotosFacebook.bind(this);
         this.select = this.select.bind(this);
-
+        this.selectToDelet = this.selectToDelet.bind(this);
         //load account if the user is connected if not go to log in
         loadAccount(this);
         //load facebook script
@@ -53,12 +52,16 @@ class UserProfile extends React.Component {
         let self = this;
         database.on("value", res => {
             let result = res.val();
-            result.forEach(item => {
-                savedPhotos.push(item);
-            });
-            self.setState({
-                saved_photos : savedPhotos
-            });
+            if(result){
+                result.forEach(item => {
+                    savedPhotos.push(item);
+                });                
+                self.setState({
+                    saved_photos : savedPhotos
+                });
+            } else{
+                notifState("warning", "Nothing saved");
+            }
         }, err => {
             console.log("Error:  " + err.code);
         });
@@ -91,20 +94,6 @@ class UserProfile extends React.Component {
         }
     }
 
-    updateAccount(facebook_id, facebook_name, facebook_accesstoken) {
-        axios.post("http://localhost:4200/users/update/" + this.state.id, {facebook_id, facebook_name, facebook_accesstoken})
-            .then(res => {
-                if (res.data.success) {
-                    notifState("success", res.data.message);
-                } else {
-                    notifState("danger", res.data.message);
-                }
-            })
-            .catch(err => {
-                notifState("danger", "Internal Error plz try again later");
-            });
-    }
-
     mapPhotos(photos){
         let gallery;
         if (photos instanceof Array) {
@@ -125,7 +114,7 @@ class UserProfile extends React.Component {
             gallery = photos.map((object, i) => {
                 return (
                     <div className="col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 photo animated zoomIn" key={i}>
-                        <img className="img-thumbnail savedPhoto" src={object} alt=""/>
+                        <img id={i} className="img-thumbnail savedPhoto" src={object} alt="" onClick={this.selectToDelet}/>
                     </div>
                 );
             })
@@ -136,7 +125,7 @@ class UserProfile extends React.Component {
     select(event) {
         let selected = this.state.selected_photos;
         if (selected.includes(event.target.src)) {
-            document.getElementById(event.target.id).className = document.getElementById(event.target.id).className.replace(/(?:^|\s)selected(?!\S)/g, " ");
+            document.getElementById(event.target.id).className = "img-thumbnail";
             selected.splice(selected.indexOf(event.target.src), 1);
         } else {
             document.getElementById(event.target.id).className += " selected";
@@ -147,16 +136,70 @@ class UserProfile extends React.Component {
         })
     }
 
+    selectToDelet(event){
+        let selected = this.state.photos_to_remove;
+        if (selected.includes(event.target.src)) {
+            document.getElementById(event.target.id).className = "img-thumbnail savedPhoto ";
+            selected.splice(selected.indexOf(event.target.src), 1);
+        } else {
+            document.getElementById(event.target.id).className += " selectedToRemove";
+            selected.push(event.target.src);
+        }
+        this.setState({
+            photos_to_remove : selected
+        })
+    }
+
     savePhotos() {
         let photosToSave = this.state.selected_photos;
+        if(photosToSave.length === 0){
+            notifState("warning", "Select some photos");
+            return;
+        }
         let photosSaved = this.state.saved_photos;
         let photos = [  ...new Set(photosToSave.concat(photosSaved)) ];
         let database = firebase.database().ref(this.state.id);
         database.set(photos);
-        notifState("success", "uploaded");
+        notifState("success", "Uploaded");
         this.getSavedPhotos();
+        let allPhotos = document.getElementsByClassName(" selected");
+        let temp = [];
+        for (let key = 0; key < allPhotos.length; key++) {
+            temp.push(allPhotos[key]);
+        }
+        for(let key in temp){
+            temp[key].className = "img-thumbnail"; 
+        }
+        this.setState({
+            selected_photos:[]
+        })
     }
 
+    deletPhotos() {
+        let photosToDelet = this.state.photos_to_remove;
+        if(photosToDelet.length === 0){
+            notifState("warning", "Select some photos to remove");
+            return;
+        }
+        let photosSaved = this.state.saved_photos;
+        photosSaved = photosSaved.filter(el => !photosToDelet.includes(el));
+        let database = firebase.database().ref(this.state.id);
+        database.set(photosSaved);
+        notifState("success", "Deleted");
+        this.getSavedPhotos();
+        let allPhotos = document.getElementsByClassName(" selectedToRemove");
+        let temp = [];
+        for (let key = 0; key < allPhotos.length; key++) {
+            temp.push(allPhotos[key]);
+        }
+        for(let key in temp){
+            temp[key].className = "img-thumbnail savedPhoto "; 
+        }
+        this.setState({
+            saved_photos : photosSaved,
+            photos_to_remove:[]
+        })
+    }
 
     render() {
         if (this.state.facebook_id) {
@@ -165,9 +208,10 @@ class UserProfile extends React.Component {
                     <Navbar/>
                     <div id="gallery" className="row center">
                         <div className="col-md-12">
-                            <a>Select photos and click the button</a>
-                            <button id="upload" className="btn btn-indigo" onClick={this.savePhotos}>Save {this.state.selected_photos.length}</button>
-                            <button id="showSaved" className="btn btn-indigo" onClick={this.getSavedPhotos}>Show Saved photos</button>
+                            <strong>Select photos and click the button</strong>
+                            <button id="upload" className="btn waves-effect waves-light success-color" onClick={this.savePhotos}>Save {this.state.selected_photos.length}</button>
+                            <button id="showSaved" className="btn waves-effect waves-light warning-color" onClick={this.getSavedPhotos}>Show Saved photos</button>
+                            <button id="delet" className="btn waves-effect waves-light danger-color" onClick={this.deletPhotos}>Delet {this.state.photos_to_remove.length}</button>
                         </div>
                         {this.mapSavedPhotos(this.state.saved_photos)}
                         {this.mapPhotos(this.state.photos)}
