@@ -125,7 +125,7 @@ export function facebookLogin(context) {
 			// Logged into your app and Facebook.
 			window.FB.api("/me", function (user) {
 				context.setState({facebook_id: user.id, facebook_name: user.name});
-				context.updateAccount(user.id, user.name, context.state.facebook_accesstoken);
+				updateAccount(context.state.id,user.id, user.name, context.state.facebook_accesstoken);
 			});
 			
 		} else if (res.status === "not_authorized") {
@@ -145,14 +145,71 @@ export function loadAccount(context) {
 					email: res.data.token.email,
 					facebook_id: res.data.token.facebook_id,
 					facebook_name: res.data.token.facebook_name,
-					facebook_accesstoken: res.data.token.facebook_accesstoken
+					facebook_accesstoken: res.data.token.facebook_accesstoken,
+					logged : true
 				});
 			} else {
-				document.getElementById("facebooklink").style.display = "none";
-				notifState("warning", "you are not logged in pleaze login first");
+				context.setState({
+					logged : false
+				});
+				//load account used by the navbar and user-profile 
+				//the facebooklink and notification only used into user-profile 
+				if(context._reactInternalInstance._context.router.route.location.pathname === "/user-profile"){
+					document.getElementById("facebooklink").style.display = "none";
+					notifState("warning", "you are not logged in pleaze login first");
+				}
 			}
 		})
 		.catch(err => {
 			notifState("danger","Internal error plz try again later");
 		});
+}
+
+export function updateAccount(id,facebook_id, facebook_name, facebook_accesstoken) {
+	axios.post("http://localhost:4200/users/update/" + id, {facebook_id, facebook_name, facebook_accesstoken})
+		.then(res => {
+			if (res.data.success) {
+				notifState("success", res.data.message);
+			} else {
+				notifState("danger", res.data.message);
+			}
+		})
+		.catch(err => {
+			notifState("danger", "Internal Error plz try again later");
+		});
+}
+
+export function submit(action,email,password){
+	axios.post("http://localhost:4200/users/"+action, {
+		email: email,
+		password : password,
+	})
+	.then(res => {
+	if(res.data.success){
+		notifState("success",res.data.message) ;
+		setTimeout(() => (
+			window.location = action==="login" ? "/user-profile": "/user-login"
+		),2000);
+	}else{
+		notifState("warning",res.data.message) ;
+	}
+	})
+	.catch(err => {
+		notifState("danger","Internal error plz try again later");
+	});
+}
+
+export function signout() {
+	axios.post("http://localhost:4200/users/logout")
+		.then(res => {
+			if (res.data.success) {
+				notifState("info", "Logging out");
+				setTimeout(() => (window.location = "/"),2000);
+			} else {
+				notifState("danger","Internal error plz try again later");
+			}
+		})
+		.catch(err => {
+			notifState("danger","Internal error plz try again later");
+		})
 }
