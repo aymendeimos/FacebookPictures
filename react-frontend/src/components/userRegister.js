@@ -2,7 +2,7 @@
 import React, {Component} from "react";
 import axios from "axios";
 import {Link} from "react-router-dom";
-import {checkLogin,notifState,checkEmail,checkPassword,submit} from "./helper"
+import {checkLogin,notifState,checkEmail,checkPassword,submit,checkConfirmPassword}from "./helper"
 
 class userRegister extends Component {
 
@@ -20,38 +20,11 @@ class userRegister extends Component {
         this.handleChangePass = this.handleChangePass.bind(this);
         this.handleChangeConfirmPass = this.handleChangeConfirmPass.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.checkConfirmPassword = this.checkConfirmPassword.bind(this);
         this.disableSubmitButton = this.disableSubmitButton.bind(this);
     }
 
-    checkConfirmPassword(style) {
-        var confirmpassword = document.getElementById("confirmpassword").children;
-        if (this.state.confirmPassword !== this.state.password || this.state.confirmPassword.length < 8) {
-            if (style === true) {
-                confirmpassword[0].style.color = "#c00";
-                confirmpassword[1].style.borderBottom = "1px solid #c00";
-                confirmpassword[1].style.boxShadow = "0 0px 0 0 #fff";
-                confirmpassword[2].style.color = "#c00";
-                confirmpassword[3].innerText = "your password does not match";
-                confirmpassword[3].style.color = "#c00";
-                confirmpassword[3].style.fontSize = "0.9rem";
-            }
-            return false;
-        }
-        else {
-            if (style === true) {
-                confirmpassword[0].style.color = "#00c851";
-                confirmpassword[1].style.borderBottom = "1px solid #00c851";
-                confirmpassword[1].style.boxShadow = "0 0px 0 0 #fff";
-                confirmpassword[2].style.color = "#00c851";
-                confirmpassword[3].innerText = "";
-            }
-            return true;
-        }
-    }
-
     disableSubmitButton() {
-        if (checkEmail(this,false) && checkPassword(this,false) && this.checkConfirmPassword(false)) {
+        if (checkEmail(this,false) && checkPassword(this,false) && checkConfirmPassword(this,false)) {
             document.getElementById("signup").disabled = false;
         } else {
             document.getElementById("signup").disabled = true;
@@ -72,12 +45,12 @@ class userRegister extends Component {
 
     handleChangeConfirmPass(event) {
         this.state.confirmPassword = event.target.value;
-        this.checkConfirmPassword(true);
+        checkConfirmPassword(this,true);
         this.disableSubmitButton();
     }
 
     handleSubmit(event) {
-        if (checkEmail(this) && checkPassword(this) && this.checkConfirmPassword()) {
+        if (checkEmail(this) && checkPassword(this) && checkConfirmPassword(this)) {
             event.preventDefault();
             submit("signup",this.state.email,this.state.password);
         }

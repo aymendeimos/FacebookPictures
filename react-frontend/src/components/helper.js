@@ -213,3 +213,29 @@ export function signout() {
 			notifState("danger","Internal error plz try again later");
 		})
 }
+
+export function checkConfirmPassword(context,style) {
+	var confirmpassword = document.getElementById("confirmpassword").children;
+	if (context.state.confirmPassword !== context.state.password || context.state.confirmPassword.length < 8) {
+		if (style === true) {
+			confirmpassword[0].style.color = "#c00";
+			confirmpassword[1].style.borderBottom = "1px solid #c00";
+			confirmpassword[1].style.boxShadow = "0 0px 0 0 #fff";
+			confirmpassword[2].style.color = "#c00";
+			confirmpassword[3].innerText = "your password does not match";
+			confirmpassword[3].style.color = "#c00";
+			confirmpassword[3].style.fontSize = "0.9rem";
+		}
+		return false;
+	}
+	else {
+		if (style === true) {
+			confirmpassword[0].style.color = "#00c851";
+			confirmpassword[1].style.borderBottom = "1px solid #00c851";
+			confirmpassword[1].style.boxShadow = "0 0px 0 0 #fff";
+			confirmpassword[2].style.color = "#00c851";
+			confirmpassword[3].innerText = "";
+		}
+		return true;
+	}
+}
