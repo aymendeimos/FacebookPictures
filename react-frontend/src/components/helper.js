@@ -249,5 +249,7 @@ export function disableSubmitButton(context,action) {
 		case "signup":
 			document.getElementById(action).disabled = (checkEmail(context,false) && checkPassword(context,false) && checkConfirmPassword(context,false)) ? false :true;
 			break;
+		default :
+			break;
 	}
 }
