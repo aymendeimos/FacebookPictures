@@ -215,7 +215,7 @@ class UserProfile extends React.Component {
             saveButton.style.display = "block";
             showSavedButton.style.display = "block";
             deletButton.style.display = "block";
-            showControlButton[0].style.transform  = "rotate(45deg)";
+            showControlButton[0].style.transform  = "rotate(135deg)";
             self.setState({
                 control_out : true
             });
