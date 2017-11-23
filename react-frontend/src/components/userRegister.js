@@ -16,9 +16,7 @@ class userRegister extends Component {
         };
 
         checkLogin(this);
-        this.handleChangeEmail = this.handleChangeEmail.bind(this);
-        this.handleChangePass = this.handleChangePass.bind(this);
-        this.handleChangeConfirmPass = this.handleChangeConfirmPass.bind(this);
+        this.handleChanges = this.handleChanges.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.disableSubmitButton = this.disableSubmitButton.bind(this);
     }
@@ -31,22 +29,25 @@ class userRegister extends Component {
         }
     }
 
-    handleChangeEmail(event) {
-        this.state.email = event.target.value;
-        checkEmail(this,true);
-        this.disableSubmitButton();
-    }
+    handleChanges(event){
+        let self = this;
+        switch (event.target.id) {
+            case "form3":
+                self.state.email = event.target.value;
+                checkEmail(self,true);
+                break;
 
-    handleChangePass(event) {
-        this.state.password = event.target.value;
-        checkPassword(this,true);
-        this.disableSubmitButton();
-    }
+            case "form4":
+                self.state.password = event.target.value;
+                checkPassword(self,true);
+                break;
 
-    handleChangeConfirmPass(event) {
-        this.state.confirmPassword = event.target.value;
-        checkConfirmPassword(this,true);
-        this.disableSubmitButton();
+            case "form5":
+                self.state.confirmPassword = event.target.value;
+                checkConfirmPassword(self,true);
+                break;
+        }
+        self.disableSubmitButton();
     }
 
     handleSubmit(event) {
@@ -72,21 +73,21 @@ class userRegister extends Component {
                                     <div className="md-form" id="mail">
                                         <i className="fa fa-envelope prefix"/>
                                         <input type="text" id="form3" className="form-control"
-                                            onChange={this.handleChangeEmail}/>
+                                            onChange={this.handleChanges}/>
                                         <label id="form2">Your email</label>
                                         <p></p>
                                     </div>
                                     <div className="md-form" id="password">
                                         <i className="fa fa-lock prefix"/>
                                         <input name="firstpass" type="password" id="form4" className="form-control"
-                                            onChange={this.handleChangePass}/>
+                                            onChange={this.handleChanges}/>
                                         <label id="form4">Your password</label>
                                         <p></p>
                                     </div>
                                     <div className="md-form" id="confirmpassword">
                                         <i className="fa fa-lock prefix"/>
                                         <input name="confirmpass" type="password" id="form5" className="form-control"
-                                            onChange={this.handleChangeConfirmPass}/>
+                                            onChange={this.handleChanges}/>
                                         <label id="form4">Confirm password</label>
                                         <p></p>
                                     </div>
