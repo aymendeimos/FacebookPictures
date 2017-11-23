@@ -115,7 +115,7 @@ body {
     transition-duration: 0.5s;
 }
 
-.show ,.save, .showSaved, .delete, .refresh{
+.show-control ,.save, .showSaved, .delete, .refresh{
     position: fixed;
     z-index: 10;
     width: 50px;
@@ -128,7 +128,7 @@ body {
 }
 
 
-.show{
+.show-control{
     bottom: 10px;
     background-color: #212121;
 }

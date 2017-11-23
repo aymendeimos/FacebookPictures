@@ -241,7 +241,7 @@ class UserProfile extends React.Component {
                         {this.mapPhotos(this.state.photos)}
                     </div>
                     <div id="showControlButton"
-                         className="ballon show waves-effect waves-light" 
+                         className="show-control waves-effect waves-light" 
                          onClick={this.showControl}>
                         <img id="showControlImg" src="./assets/img/plus.png" className="img-fluid" alt="refresh"/>
                     </div>
