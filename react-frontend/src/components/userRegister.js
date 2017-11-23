@@ -2,7 +2,7 @@
 import React, {Component} from "react";
 import axios from "axios";
 import {Link} from "react-router-dom";
-import {checkLogin,notifState,checkEmail,checkPassword,submit,checkConfirmPassword}from "./helper"
+import {checkLogin,notifState,checkEmail,checkPassword,submit,checkConfirmPassword,disableSubmitButton}from "./helper"
 
 class userRegister extends Component {
 
@@ -18,15 +18,6 @@ class userRegister extends Component {
         checkLogin(this);
         this.handleChanges = this.handleChanges.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.disableSubmitButton = this.disableSubmitButton.bind(this);
-    }
-
-    disableSubmitButton() {
-        if (checkEmail(this,false) && checkPassword(this,false) && checkConfirmPassword(this,false)) {
-            document.getElementById("signup").disabled = false;
-        } else {
-            document.getElementById("signup").disabled = true;
-        }
     }
 
     handleChanges(event){
@@ -47,7 +38,7 @@ class userRegister extends Component {
                 checkConfirmPassword(self,true);
                 break;
         }
-        self.disableSubmitButton();
+        disableSubmitButton(self,"signup");
     }
 
     handleSubmit(event) {

@@ -239,3 +239,15 @@ export function checkConfirmPassword(context,style) {
 		return true;
 	}
 }
+
+export function disableSubmitButton(context,action) {
+	switch (action) {
+		case "login":
+			document.getElementById(action).disabled = (checkEmail(context,false) && checkPassword(context,false)) ? false :true;
+			break;
+	
+		case "signup":
+			document.getElementById(action).disabled = (checkEmail(context,false) && checkPassword(context,false) && checkConfirmPassword(context,false)) ? false :true;
+			break;
+	}
+}
