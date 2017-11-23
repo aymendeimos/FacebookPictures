@@ -1,8 +1,6 @@
- /* eslint-disable */
 import React, {Component} from "react";
-import axios from "axios";
-import {Link} from "react-router-dom";
-import {checkLogin, notifState,checkEmail,checkPassword,submit,disableSubmitButton} from "./helper";
+
+import {checkLogin,checkEmail,checkPassword,submit,disableSubmitButton} from "./helper";
 
 class userLogin extends Component {
 
@@ -32,7 +30,7 @@ class userLogin extends Component {
             case "loginForm":
                 if (checkEmail(this) && checkPassword(this)) {
                     event.preventDefault();
-                    submit("login",this.state.email,this.state.password);
+                    submit(self,"login",this.state.email,this.state.password);
                 }
                 break;
             default :
@@ -72,12 +70,11 @@ class userLogin extends Component {
                                         <button className="btn waves-effect waves-light elegant-color-dark" type="submit"
                                                 id="login" disabled>Log In
                                         </button>
-                                        
-                                        <Link to="/user-registration">
-                                            <button className="btn waves-effect waves-light elegant-color-dark" type=""
-                                                    id="SignUp">Go to SignUp
-                                            </button>
-                                        </Link>
+                                        <button className="btn waves-effect waves-light elegant-color-dark" 
+                                                type=""
+                                                onClick={()=>{this.props.history.push("user-registration")}}
+                                                id="SignUp">Go to SignUp
+                                        </button>
                                     </div>
 
 
