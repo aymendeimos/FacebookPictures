@@ -8,7 +8,7 @@ export function checkLogin(context){
 				logged : true
 			});
 			notifState("warning","You are already logged in");
-			setTimeout(() => (window.location = "/user-profile"),2000);
+			setTimeout(() => (context.props.history.push('/user-profile')),1000);
 		}else{
 			context.setState({
 				logged : false
@@ -179,7 +179,7 @@ export function updateAccount(id,facebook_id, facebook_name, facebook_accesstoke
 		});
 }
 
-export function submit(action,email,password){
+export function submit(context,action,email,password){
 	axios.post("http://localhost:4200/users/"+action, {
 		email: email,
 		password : password,
@@ -187,9 +187,8 @@ export function submit(action,email,password){
 	.then(res => {
 	if(res.data.success){
 		notifState("success",res.data.message) ;
-		setTimeout(() => (
-			window.location = action==="login" ? "/user-profile": "/user-login"
-		),2000);
+		let pageToRender = (action==="login" ? "/user-profile": "/user-login")
+		setTimeout(() => (context.props.history.push(pageToRender)),1000);
 	}else{
 		notifState("warning",res.data.message) ;
 	}
@@ -199,12 +198,12 @@ export function submit(action,email,password){
 	});
 }
 
-export function signout() {
+export function signout(self) {
 	axios.post("http://localhost:4200/users/logout")
 		.then(res => {
 			if (res.data.success) {
 				notifState("info", "Logging out");
-				setTimeout(() => (window.location = "/"),2000);
+				setTimeout(() => (self._reactInternalInstance._currentElement._owner._instance.props.history.push("/")),1000);
 			} else {
 				notifState("danger","Internal error plz try again later");
 			}
