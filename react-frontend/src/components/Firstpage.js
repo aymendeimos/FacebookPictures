@@ -1,5 +1,4 @@
 import React from "react";
-import {Link} from "react-router-dom";
 import {loadAccount} from "./helper";
 
 class Firstpage extends React.Component {
@@ -15,9 +14,26 @@ class Firstpage extends React.Component {
 
     render() {
         let username = (this.state.facebook_name ? this.state.facebook_name : this.state.email);
-        let login = (<Link to="/user-login" key="0"><button className="btn btn-lg waves-effect waves-light elegant-color-dark" type="" id="SignUp">LogIn</button></Link>);
-        let singnup = (<Link to="/user-registration" key="1"><button className="btn btn-lg waves-effect waves-light elegant-color-dark" type="" id="SignUp">SignUp</button></Link>);
-        let profile = (<Link to="/user-profile"><button className="btn btn-lg waves-effect waves-light elegant-color-dark" type="" id="">{username}</button></Link>);
+        let login = (<button   className="btn btn-lg waves-effect waves-light elegant-color-dark" 
+                               key="0" type="" 
+                               id="SignUp" 
+                               onClick={()=>{this.props.history.push("user-login")}}>
+                            LogIn
+                    </button>);
+        let singnup = (<button className="btn btn-lg waves-effect waves-light elegant-color-dark" 
+                               key="1" 
+                               type="" 
+                               id="SignUp" 
+                               onClick={()=>{this.props.history.push("user-registration")}}>
+                            SignUp
+                        </button>);
+        let profile = (<button className="btn btn-lg waves-effect waves-light elegant-color-dark" 
+                               key="2" 
+                               type="" 
+                               id="" 
+                               onClick={()=>{this.props.history.push("user-profile")}}>
+                            {username}
+                        </button>);
         let control = (this.state.logged?profile:[login ,singnup]);
         return (
             <div className="index container animated fadeIn">
