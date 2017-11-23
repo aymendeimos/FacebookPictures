@@ -1,6 +1,6 @@
 import React from "react";
 import {Link} from "react-router-dom";
-import axios from "axios";
+import {loadAccount} from "./helper";
 
 class Firstpage extends React.Component {
     constructor(props){
@@ -10,30 +10,8 @@ class Firstpage extends React.Component {
             facebook_name: '',
             logged : true
         }
-        this.loadAccount();
+        loadAccount(this);
     }
-
-    loadAccount() {
-        let self = this;
-        axios.post("http://localhost:4200/users/gettoken")
-            .then(res => {
-                if (res.data.success) {
-                    self.setState({
-                        email: res.data.token.email,
-                        facebook_name: res.data.token.facebook_name,
-                        logged : true,
-                    });
-                } else {
-                    self.setState({
-                        logged : false,
-                    });
-                }
-            })
-            .catch(err => {
-                console.log(err);
-            });
-    }
-
 
     render() {
         let username = (this.state.facebook_name ? this.state.facebook_name : this.state.email);
