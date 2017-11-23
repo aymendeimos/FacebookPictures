@@ -2,7 +2,7 @@
 import React, {Component} from "react";
 import axios from "axios";
 import {Link} from "react-router-dom";
-import {checkLogin,notifState,checkEmail,checkPassword,submit,checkConfirmPassword,disableSubmitButton}from "./helper"
+import {checkLogin,notifState,checkEmail,checkPassword,submit,checkConfirmPassword,disableSubmitButton} from "./helper"
 
 class userRegister extends Component {
 
@@ -17,7 +17,6 @@ class userRegister extends Component {
 
         checkLogin(this);
         this.handleChanges = this.handleChanges.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleChanges(event){
@@ -37,17 +36,17 @@ class userRegister extends Component {
                 self.state.confirmPassword = event.target.value;
                 checkConfirmPassword(self,true);
                 break;
+            case "signupForm":
+                if (checkEmail(this) && checkPassword(this) && checkConfirmPassword(this)) {
+                    event.preventDefault();
+                    submit("signup",this.state.email,this.state.password);
+                }
+                break;
+            default :
+                break;
         }
         disableSubmitButton(self,"signup");
     }
-
-    handleSubmit(event) {
-        if (checkEmail(this) && checkPassword(this) && checkConfirmPassword(this)) {
-            event.preventDefault();
-            submit("signup",this.state.email,this.state.password);
-        }
-    }
-
 
     render() {
         if(!this.state.logged){
@@ -56,7 +55,7 @@ class userRegister extends Component {
                     <div className="container cardcontainer userregistration  animated bounceInLeft" id="form">
                         <div className="row justify-content-center">
                             <div className="card col-lg-5 col-sm-8 col-md-8">
-                                <form className="card-block" onSubmit={this.handleSubmit}>
+                                <form id="signupForm" className="card-block" onSubmit={this.handleChanges}>
                                     <div className="form-header elegant-color-dark">
                                         <h3> Register</h3>
                                     </div>

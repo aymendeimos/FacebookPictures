@@ -2,7 +2,7 @@
 import React, {Component} from "react";
 import axios from "axios";
 import {Link} from "react-router-dom";
-import {checkLogin, notifState,checkEmail,checkPassword,submit,disableSubmitButton} from "./helper"
+import {checkLogin, notifState,checkEmail,checkPassword,submit,disableSubmitButton} from "./helper";
 
 class userLogin extends Component {
 
@@ -15,14 +15,6 @@ class userLogin extends Component {
         };
         checkLogin(this);
         this.handleChanges = this.handleChanges.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-    }
-
-    handleSubmit(event) {
-        if (checkEmail(this) && checkPassword(this)) {
-            event.preventDefault();
-            submit("login",this.state.email,this.state.password);
-        }
     }
 
     handleChanges(event){
@@ -37,6 +29,14 @@ class userLogin extends Component {
                 self.state.password = event.target.value;
                 checkPassword(self,true);
                 break;
+            case "loginForm":
+                if (checkEmail(this) && checkPassword(this)) {
+                    event.preventDefault();
+                    submit("login",this.state.email,this.state.password);
+                }
+                break;
+            default :
+                break;
         }
         disableSubmitButton(self,"login");
     }
@@ -49,7 +49,7 @@ class userLogin extends Component {
                     <div className="container cardcontainer userregistration animated bounceInLeft">
                         <div className="row justify-content-center">
                             <div className="card col-lg-5 col-sm-8 col-md-8">
-                                <form className="card-block" onSubmit={this.handleSubmit}>
+                                <form id="loginForm" className="card-block" onSubmit={this.handleChanges}>
                                     <div className="form-header elegant-color-dark">
                                         <h3> Log In</h3>
                                     </div>
