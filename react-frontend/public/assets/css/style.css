@@ -288,3 +288,15 @@ body {
     -ms-transform: translate(0, -50%);
     transform: translate(0, -50%);
 }
+
+#connection_state{
+    background-image: url("../img/connection_lost.png");
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 100%;
+    position: fixed;
+    z-index: 10000;
+    display:none;
+}

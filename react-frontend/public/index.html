@@ -17,7 +17,14 @@
 </head>
 
 <body>
+	<div id="connection_state"></div>
 	<div id="app"></div>
+	<script>
+		window.addEventListener('load', () => {
+			window.addEventListener('online',  (event)=>{document.getElementById("connection_state").style.display = "none"});
+			window.addEventListener('offline', (event)=>{document.getElementById("connection_state").style.display = "block"});
+		});
+	</script>
 	<div id="notif" className=""></div>
 	<script src="assets/js/jquery-3.2.1.js"></script>
 	<script src="assets/js/Tether.js"></script>
